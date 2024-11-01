@@ -1,4 +1,3 @@
-# main.py
 from database import Database
 from sales_rep import SalesRep
 from sales_rep_data import SalesRepData
