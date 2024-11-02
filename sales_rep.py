@@ -9,26 +9,30 @@ class SalesRep:
     """
 
     def __init__(self, db: Database):
-        # Reference to the Database instance
         self.db = db
 
     def add_sales_rep(self, name):
         """
-        Adds a new sales rep by name. Ensures names are unique.
+        Adds a new sales rep. The employee ID is auto-generated and displayed in the format EMP001.
         """
         try:
-            # Insert new rep into the sales_rep table
+            # Execute the query to insert the new sales rep
             self.db.execute_query(
                 "INSERT INTO sales_rep (name) VALUES (?)", (name,)
             )
-            print(f"Sales rep {name} added successfully.")
+            # Fetch the ID of the newly added sales rep
+            rep_id = self.db.cursor.lastrowid
+            # Format the ID as EMP001, EMP002, etc.
+            formatted_id = f"EMP{rep_id:03d}"
+            print(
+                f"Sales rep {name} added successfully with ID: {formatted_id}."
+            )
         except sqlite3.IntegrityError:
-            print(f"Sales rep {name} already exists. Enter a unique name.")
+            print("An error occurred while adding the sales rep.")
 
     def get_all_sales_reps(self):
         """
-        Fetches all sales reps from the database.
-        Returns a list of tuples with (id, name).
+        Fetches all sales reps and returns a list of tuples (id, name).
         """
         return self.db.fetch_all("SELECT id, name FROM sales_rep")
 

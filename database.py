@@ -18,19 +18,18 @@ class Database:
     def setup_tables(self):
         """
         Creates tables if they do not already exist.
-        Tables: sales_rep, sales_rep_data
         """
-        # Table for sales reps
+        # Update the sales_rep table to use the id as the primary key (auto-incremented)
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS sales_rep (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT UNIQUE
+                id INTEGER PRIMARY KEY AUTOINCREMENT,  -- This will act as employee_id
+                name TEXT
             )
-        """
+            """
         )
 
-        # Table for daily metrics
+        # Table for daily metrics remains unchanged
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS sales_rep_data (
@@ -45,9 +44,8 @@ class Database:
                 contract_value REAL,
                 FOREIGN KEY (rep_id) REFERENCES sales_rep (id)
             )
-        """
+            """
         )
-        # Commit changes to the database
         self.conn.commit()
 
     def execute_query(self, query, params=()):

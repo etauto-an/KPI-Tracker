@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS sales_rep_data (
 )
 conn.commit()
 
+
 # Function to add a new sales rep
 def add_sales_rep():
     name = input("Enter the new sales rep's name: ").strip()
