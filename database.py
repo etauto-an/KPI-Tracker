@@ -1,11 +1,10 @@
-# database.py
 import sqlite3
 
 
 class Database:
     """
     Handles database connection, table setup, and query execution.
-    Manages a SQLite database for storing sales reps and metrics.
+    Manages a SQLite database for storing sales reps, metrics, and user roles.
     """
 
     def __init__(self, db_name="kpi_tracker_v2.db"):
@@ -17,7 +16,7 @@ class Database:
 
     def setup_tables(self):
         """
-        Creates tables if they do not already exist.
+        Creates tables if they do not already exist, including a users table with role-based access.
         """
         # Update the sales_rep table to use the id as the primary key (auto-incremented)
         self.cursor.execute(
@@ -46,6 +45,19 @@ class Database:
             )
             """
         )
+
+        # Table for users with roles for role-based access
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,       -- user ID, e.g., EMP001
+                pin TEXT,                  -- hashed PIN for security
+                name TEXT,
+                role TEXT CHECK(role IN ('sales_rep', 'manager'))  -- restrict role to 'sales_rep' or 'manager'
+            )
+            """
+        )
+
         self.conn.commit()
 
     def execute_query(self, query, params=()):
@@ -57,7 +69,7 @@ class Database:
 
     def fetch_all(self, query, params=()):
         """
-        Executes a SELECT query with parameters and fetches all results.
+        Fetches all rows for a given SQL query.
         """
         self.cursor.execute(query, params)
         return self.cursor.fetchall()
