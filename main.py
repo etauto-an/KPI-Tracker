@@ -34,7 +34,7 @@ def initial_setup(user_manager):
 
     name = input("Enter manager name: ").strip()
     user_id = input("Enter user ID (e.g., MGR001): ").strip()
-    pin = input("Enter a secure PIN: ").strip()
+    pin = input("Enter a 4-digit PIN: ").strip()
 
     hashed_pin = hash_pin(pin)
 
@@ -64,6 +64,7 @@ def main():
         # Prompt for login if users already exist
         user_id = input("Enter your User ID: ").strip()
         pin = input("Enter your PIN: ").strip()
+        print("")
         hashed_pin = hash_pin(pin)
 
         user = user_manager.get_user(user_id)
@@ -78,7 +79,9 @@ def main():
             if user["role"] == "manager":
                 manager_menu(user_manager, metrics_manager, kpi_calculator)
             elif user["role"] == "sales_rep":
-                sales_rep_menu(metrics_manager, kpi_calculator, user_id)
+                sales_rep_menu(
+                    metrics_manager, kpi_calculator, user_id, user["name"]
+                )
         else:
             print("Invalid User ID or PIN. Please try again.")
 

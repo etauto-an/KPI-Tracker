@@ -4,7 +4,15 @@ from src.views import views
 from src.models.user_manager import UserManager
 from src.models.sales_rep_data import SalesRepData
 from src.models.kpi_calculator import KPI
+import os
 
+
+def clear_screen():
+    # Check if the OS is Windows or Unix/Linux/Mac and clear screen accordingly
+    if os.name == "nt":  # For Windows
+        os.system("cls")
+    else:  # For Unix/Linux/Mac
+        os.system("clear")
 
 def manager_menu(
     user_manager: UserManager,
@@ -23,6 +31,7 @@ def manager_menu(
     while True:
         views.display_manager_menu()
         choice = input("Enter your choice: ").strip()
+        clear_screen()  # Clear the terminal before displaying the menu
 
         if choice == "1":
             # Add a new sales rep using UserManager
@@ -47,6 +56,7 @@ def manager_menu(
         elif choice == "3":
             # Placeholder for report generation
             print("Generating report (functionality to be implemented).")
+            print("")
 
         elif choice == "4":
             # Exit the manager menu
@@ -58,7 +68,7 @@ def manager_menu(
 
 
 def sales_rep_menu(
-    metrics_manager: SalesRepData, kpi_calculator: KPI, rep_id: str
+    metrics_manager: SalesRepData, kpi_calculator: KPI, rep_id: str, name: str
 ):
     """
     Displays the sales rep menu and handles sales rep-specific actions.
@@ -72,6 +82,7 @@ def sales_rep_menu(
     while True:
         views.display_sales_rep_menu()
         choice = input("Enter your choice: ").strip()
+        clear_screen()  # Clear the terminal before displaying the menu
 
         if choice == "1":
             # Prompt for daily metrics and add them using SalesRepData
@@ -96,8 +107,9 @@ def sales_rep_menu(
 
         elif choice == "2":
             # View personal KPIs using KPI calculator
-            print(f"\nKPI Summary for Sales Rep {rep_id}:")
-            kpi_calculator.calculate_kpis(rep_id, "Your Name")
+            # print(f"\nKPI Summary for Sales Rep {rep_id}:")
+
+            kpi_calculator.calculate_kpis(rep_id, name)
 
         elif choice == "3":
             # Exit the sales rep menu

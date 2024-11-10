@@ -51,4 +51,3 @@ class SalesRepData:
                 contract_value,
             ),
         )
-        print("Daily metrics added successfully.")

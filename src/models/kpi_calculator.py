@@ -1,5 +1,3 @@
-# src/models/kpi_calculator.py
-
 from .sales_rep_data import SalesRepData
 from .user_manager import UserManager
 
@@ -45,12 +43,32 @@ class KPI:
             (rep_id,),
         )[0]
 
-        # Calculate KPIs
-        # (Detailed KPI calculations here)
+        # Unpack data
+        (
+            scheduled_calls,
+            live_calls,
+            offers,
+            closed,
+            cash_collected,
+            contract_value,
+        ) = data
+
+        # Calculate KPIs with conditional handling to avoid division by zero
+        show_percentage = (
+            (live_calls / scheduled_calls * 100) if scheduled_calls else 0
+        )
+        offer_percentage = (offers / live_calls * 100) if live_calls else 0
+        close_percentage = (closed / offers * 100) if offers else 0
+        cash_per_call = (cash_collected / live_calls) if live_calls else 0
+        revenue_per_call = (contract_value / live_calls) if live_calls else 0
 
         # Output KPI summary for the given sales rep
-        print(f"\nKPI Summary for {name}:\n")
-        # (Display each calculated KPI)
+        print(f"\nKPI Summary for {name}:")
+        print(f"Show Percentage: {show_percentage:.2f}%")
+        print(f"Offer Percentage: {offer_percentage:.2f}%")
+        print(f"Close Percentage: {close_percentage:.2f}%")
+        print(f"Cash per Call: ${cash_per_call:.2f}")
+        print(f"Revenue per Call: ${revenue_per_call:.2f}")
 
     def compare_all_kpis(self):
         """

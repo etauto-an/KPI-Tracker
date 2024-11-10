@@ -1,15 +1,16 @@
 # src/views/views.py
 
+
 def display_manager_menu():
     """
     Displays the manager menu options to the user.
     """
     print(
-        "Manager Menu:\n"
+        "\nManager Menu:\n"
         "1. Add Sales Rep\n"
         "2. View All KPIs\n"
         "3. Generate report\n"
-        "4. Exit"
+        "4. Exit\n"
     )
 
 
@@ -18,17 +19,18 @@ def display_sales_rep_menu():
     Displays the sales rep menu options to the user.
     """
     print(
-        "Sales Rep Menu:\n"
+        "\nSales Rep Menu:\n"
         "1. Add Daily Metrics\n"
         "2. View Personal KPIs\n"
-        "3. Logout"
+        "3. Logout\n"
     )
+    # print("")
 
 
 def prompt_for_metrics():
     """
     Prompts the user to enter daily metrics data.
-    
+
     Returns:
         tuple: A tuple containing the following metrics:
             - scheduled_calls (int): Number of scheduled calls.
@@ -44,7 +46,7 @@ def prompt_for_metrics():
     closed = int(input("Enter closed deals: "))
     cash_collected = float(input("Enter cash collected: "))
     contract_value = float(input("Enter contract value: "))
-    
+
     # Return all the collected metrics as a tuple
     return (
         scheduled_calls,
