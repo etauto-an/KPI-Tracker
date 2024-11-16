@@ -14,6 +14,50 @@ def clear_screen():
     else:  # For Unix/Linux/Mac
         os.system("clear")
 
+
+def get_nonempty_input(prompt):
+    """
+    Prompts the user for input and ensures the input is not empty.
+
+    Args:
+        prompt (str): The input prompt to display.
+
+    Returns:
+        str: The valid, nonempty input provided by the user.
+    """
+    while True:
+        value = input(prompt).strip()
+        if value:
+            return value
+        print("Error: All fields are required. Please enter valid data.")
+
+
+def get_numeric_input(prompt, length=4):
+    """
+    Prompts the user for numeric input and ensures it contains only digits and has the required length.
+
+    Args:
+        prompt (str): The input prompt to display.
+        length (int, optional): The required length of the input. Defaults to None.
+
+    Returns:
+        str: A valid numeric input.
+    """
+    while True:
+        value = input(prompt).strip()
+        if value.isdigit():  # Ensures input is numeric and nonempty
+            if length and len(value) != length:
+                print(
+                    f"Error: Input must be exactly {length} digits. Please try again."
+                )
+            else:
+                return value  # Valid numeric input with the correct length
+        else:
+            print(
+                "Error: Input must be numeric and not empty. Please try again."
+            )
+
+
 def manager_menu(
     user_manager: UserManager,
     metrics_manager: SalesRepData,
@@ -35,18 +79,32 @@ def manager_menu(
 
         if choice == "1":
             # Add a new sales rep using UserManager
-            name = input("Enter the sales rep's name: ").strip()
-            user_id = input(
-                "Enter the sales rep's user ID (e.g., SR001): "
-            ).strip()
-            pin = input("Enter a PIN for the sales rep: ").strip()
+            name = get_nonempty_input("Enter the sales rep's name: ")
+            while True:
+                user_id = get_nonempty_input(
+                    "Enter the sales rep's user ID (e.g., SR001): "
+                )
+                if user_manager.validate_user_id(user_id):
+                    break  # Exit the loop if the User ID is unique
+                print(
+                    f"Error: User ID '{user_id}' already exists. Please try a different ID."
+                )
+
+            # Use get_numeric_input to enforce nonempty and numeric validation for PIN
+            pin = get_numeric_input(
+                "Enter a 4-digit PIN for the sales rep: ", length=4
+            )
+
             hashed_pin = hash_pin(pin)
 
             # Use UserManager to add the new sales rep
-            user_manager.add_user(
-                user_id=user_id, pin=hashed_pin, name=name, role="sales_rep"
-            )
-            print(f"Sales rep {name} added successfully with ID {user_id}.")
+            try:
+                user_manager.add_user(
+                    user_id=user_id, pin=hashed_pin, name=name, role="sales_rep"
+                )
+                print(f"Sales rep {name} added successfully with ID {user_id}.")
+            except ValueError as e:
+                print(f"Error: {e}")
 
         elif choice == "2":
             # View KPIs across all sales reps using KPI

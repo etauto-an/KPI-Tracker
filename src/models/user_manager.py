@@ -75,3 +75,22 @@ class UserManager:
         return [
             {"id": row[0], "name": row[1], "role": row[2]} for row in results
         ]
+
+    def validate_user_id(self, user_id):
+        """
+        Checks if a user ID already exists in the database.
+
+        Args:
+            user_id (str): The user ID to validate.
+
+        Returns:
+            bool: True if the user ID does not exist, False otherwise.
+        """
+        query = "SELECT COUNT(*) FROM users WHERE id = ?"
+        try:
+            result = self.db.fetch_all(query, (user_id,))
+            # If the result is empty or returns a count of 0, the user ID is valid
+            return result and result[0][0] == 0
+        except Exception as e:
+            print(f"Error validating user ID: {e}")
+            return False

@@ -21,10 +21,52 @@ def hash_pin(pin):
     return hashlib.sha256(pin.encode()).hexdigest()
 
 
+def get_nonempty_input(prompt):
+    """
+    Prompts the user for input and ensures the input is not empty.
+
+    Args:
+        prompt (str): The input prompt to display.
+
+    Returns:
+        str: The valid, nonempty input provided by the user.
+    """
+    while True:
+        value = input(prompt).strip()
+        if value:
+            return value
+        print("Error: All fields are required. Please enter valid data.")
+
+
+def get_numeric_input(prompt, length=4):
+    """
+    Prompts the user for numeric input and ensures it contains only digits and has the required length.
+
+    Args:
+        prompt (str): The input prompt to display.
+        length (int, optional): The required length of the input. Defaults to None.
+
+    Returns:
+        str: A valid numeric input.
+    """
+    while True:
+        value = input(prompt).strip()
+        if value.isdigit():  # Ensures input is numeric and nonempty
+            if length and len(value) != length:
+                print(
+                    f"Error: Input must be exactly {length} digits. Please try again."
+                )
+            else:
+                return value  # Valid numeric input with the correct length
+        else:
+            print(
+                "Error: Input must be numeric and not empty. Please try again."
+            )
+
+
 def initial_setup(user_manager):
     """
-    Initializes the database with an initial manager account if no users
-    exist.
+    Initializes the database with an initial manager account if no users exist.
 
     Args:
         user_manager (UserManager): Instance of UserManager to manage users.
@@ -32,9 +74,11 @@ def initial_setup(user_manager):
     print("No users found in the database. Initial setup required.")
     print("Please create the first manager account.")
 
-    name = input("Enter manager name: ").strip()
-    user_id = input("Enter user ID (e.g., MGR001): ").strip()
-    pin = input("Enter a 4-digit PIN: ").strip()
+    # Validate nonempty input for name, user_id, and PIN
+    name = get_nonempty_input("Enter manager name: ")
+    user_id = get_nonempty_input("Enter user ID (e.g., MGR001): ")
+
+    pin = get_numeric_input("Enter a 4-digit PIN: ")
 
     hashed_pin = hash_pin(pin)
 
