@@ -7,13 +7,15 @@ from src.models.user_manager import UserManager
 from src.controllers.menus import (
     manager_menu,
     sales_rep_menu,
+    initial_setup,
+    login_user
+)
+from src.controllers.utils import (
     get_nonempty_input,
     get_numeric_input,
-    clear_screen,
     hash_pin,
-    initial_setup,
+    clear_screen
 )
-
 
 def main():
     # Initialize database and related classes
@@ -36,7 +38,6 @@ def main():
         pin = input("Enter your PIN: ").strip()
         clear_screen()
         hashed_pin = hash_pin(pin)
-
         user = user_manager.get_user(user_id)
 
         if user and user["pin"] == hashed_pin:

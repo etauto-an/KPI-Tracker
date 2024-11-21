@@ -4,59 +4,37 @@ from src.views import views
 from src.models.user_manager import UserManager
 from src.models.sales_rep_data import SalesRepData
 from src.models.kpi_calculator import KPI
+from src.controllers.utils import (
+    get_nonempty_input,
+    get_numeric_input,
+    hash_pin,
+    clear_screen
+)
 import os
 
-
-def clear_screen():
-    # Check if the OS is Windows or Unix/Linux/Mac and clear screen accordingly
-    if os.name == "nt":  # For Windows
-        os.system("cls")
-    else:  # For Unix/Linux/Mac
-        os.system("clear")
-
-
-def get_nonempty_input(prompt):
+def login_user(user_manager):
     """
-    Prompts the user for input and ensures the input is not empty.
-
+    Prompts the user for login credentials and authenticates the user.
+    
     Args:
-        prompt (str): The input prompt to display.
-
+        user_manager (UserManager): Instance of UserManager to handle user authentication.
+    
     Returns:
-        str: The valid, nonempty input provided by the user.
+        dict: User details if authentication is successful, None otherwise.
     """
-    while True:
-        value = input(prompt).strip()
-        if value:
-            return value
-        print("Error: All fields are required. Please enter valid data.")
+    user_id = input("Enter your User ID: ").strip()
+    pin = input("Enter your PIN: ").strip()
+    clear_screen()
+    hashed_pin = hash_pin(pin)
 
+    user = user_manager.get_user(user_id)
 
-def get_numeric_input(prompt, length=4):
-    """
-    Prompts the user for numeric input and ensures it contains only digits and has the required length.
-
-    Args:
-        prompt (str): The input prompt to display.
-        length (int, optional): The required length of the input. Defaults to None.
-
-    Returns:
-        str: A valid numeric input.
-    """
-    while True:
-        value = input(prompt).strip()
-        if value.isdigit():  # Ensures input is numeric and nonempty
-            if length and len(value) != length:
-                print(
-                    f"Error: Input must be exactly {length} digits. Please try again."
-                )
-            else:
-                return value  # Valid numeric input with the correct length
-        else:
-            print(
-                "Error: Input must be numeric and not empty. Please try again."
-            )
-
+    if user and user["pin"] == hashed_pin:
+        print(f"Welcome, {user['name']}! You are logged in as a {user['role']}.")
+        return user
+    else:
+        print("Invalid User ID or PIN. Please try again.")
+        return None
 
 def manager_menu(
     user_manager: UserManager,
@@ -178,21 +156,6 @@ def sales_rep_menu(
 
         else:
             print("Invalid choice. Please try again.")
-
-
-def hash_pin(pin):
-    """
-    Hashes a user's PIN for secure storage and comparison.
-
-    Args:
-        pin (str): Plain text PIN to hash.
-
-    Returns:
-        str: SHA-256 hash of the PIN.
-    """
-    import hashlib
-
-    return hashlib.sha256(pin.encode()).hexdigest()
 
 
 def initial_setup(user_manager):
