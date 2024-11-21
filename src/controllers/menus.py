@@ -96,6 +96,7 @@ def manager_menu(
             )
 
             hashed_pin = hash_pin(pin)
+            clear_screen()
 
             # Use UserManager to add the new sales rep
             try:
@@ -108,7 +109,7 @@ def manager_menu(
 
         elif choice == "2":
             # View KPIs across all sales reps using KPI
-            print("\nComparing KPIs Across All Sales Reps:")
+            print("Comparing KPIs Across All Sales Reps:")
             kpi_calculator.compare_all_kpis()
 
         elif choice == "3":
@@ -161,6 +162,7 @@ def sales_rep_menu(
                 cash_collected,
                 contract_value,
             )
+            clear_screen()
             print("Daily metrics added successfully.")
 
         elif choice == "2":
@@ -191,3 +193,27 @@ def hash_pin(pin):
     import hashlib
 
     return hashlib.sha256(pin.encode()).hexdigest()
+
+
+def initial_setup(user_manager):
+    """
+    Initializes the database with an initial manager account if no users exist.
+
+    Args:
+        user_manager (UserManager): Instance of UserManager to manage users.
+    """
+    print("No users found in the database. Initial setup required.")
+    print("Please create the first manager account.")
+
+    # Validate nonempty input for name, user_id, and PIN
+    name = get_nonempty_input("Enter manager name: ")
+    user_id = get_nonempty_input("Enter user ID (e.g., MGR001): ")
+    pin = get_numeric_input("Enter a 4-digit PIN: ")
+    clear_screen()
+    hashed_pin = hash_pin(pin)
+
+    # Create the initial manager account
+    user_manager.add_user(
+        user_id=user_id, pin=hashed_pin, name=name, role="manager"
+    )
+    print(f"Manager account created successfully with ID {user_id}.")
