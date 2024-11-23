@@ -29,13 +29,11 @@ class Database:
         - sales_rep_data: Stores daily metrics for each sales rep.
         - users: Stores user information, including roles for role-based access.
         """
-
-        # Table for daily metrics remains unchanged
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS sales_rep_data (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                rep_id INTEGER,       -- References the user ID of the sales rep
+                rep_id TEXT,          -- References the user ID of the sales rep
                 date TEXT,            -- Date of the metric entry
                 scheduled_calls INTEGER,
                 live_calls INTEGER,
@@ -45,10 +43,10 @@ class Database:
                 contract_value REAL,
                 FOREIGN KEY (rep_id) REFERENCES users (id)
             )
-        """
+            """
         )
 
-        # Table for users with roles for role-based access
+        # Table for users remains unchanged
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS users (
@@ -58,10 +56,9 @@ class Database:
                 role TEXT CHECK(role IN ('sales_rep', 'manager'))
                                               -- Role-based access restriction
             )
-        """
+            """
         )
 
-        # Commit the table creation commands
         self.conn.commit()
 
     def execute_query(self, query, params=()):

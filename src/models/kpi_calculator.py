@@ -29,8 +29,9 @@ class KPI:
             name (str): The name of the sales rep.
 
         Outputs:
-            Displays KPI summary including show percentage, offer percentage,
-            close percentage, cash per call, and revenue per call.
+            Displays KPI summary including raw values, show percentage, offer
+            percentage, close percentage, cash per call, and revenue per call in 
+            the specified format.
         """
         # Fetch sales rep data from sales_rep_data table
         data = self.db.fetch_all(
@@ -63,20 +64,34 @@ class KPI:
         revenue_per_call = (contract_value / live_calls) if live_calls else 0
 
         # Output KPI summary for the given sales rep
-        print(f"\nKPI Summary for {name}:")
-        print(f"Show Percentage: {show_percentage:.2f}%")
-        print(f"Offer Percentage: {offer_percentage:.2f}%")
-        print(f"Close Percentage: {close_percentage:.2f}%")
-        print(f"Cash per Call: ${cash_per_call:.2f}")
-        print(f"Revenue per Call: ${revenue_per_call:.2f}")
+        print(f"\nKPI Summary for Employee {rep_id}:")
+        print(
+            f" - Show Percentage: {show_percentage:.2f}% ({scheduled_calls} "
+            f"Scheduled Calls, {live_calls} Live Calls)"
+        )
+        print(
+            f" - Offer Percentage: {offer_percentage:.2f}% ({live_calls} Live Calls, "
+            f"{offers} Offers)"
+        )
+        print(
+            f" - Close Percentage: {close_percentage:.2f}% ({offers} Offers, {closed} "
+            f"Closed Deals)"
+        )
+        print(
+            f" - Cash Collected: ${cash_collected:.2f}"
+        )
+        print(
+            f" - Contract Value: ${contract_value:.2f}"
+        )
 
     def compare_all_kpis(self):
         """
-        Compares KPIs across all sales reps by retrieving data through
+        Compares KPIs across all sales reps by retrieving data through 
         UserManager.
 
         Outputs:
-            Displays a KPI summary for each sales rep for comparison.
+            Displays a KPI summary (with raw values) for each sales rep for 
+            comparison.
         """
         # Get all sales reps from UserManager
         reps = [

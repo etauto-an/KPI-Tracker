@@ -8,14 +8,9 @@ from src.controllers.menus import (
     manager_menu,
     sales_rep_menu,
     initial_setup,
-    login_user
+    login_user,
 )
-from src.controllers.utils import (
-    get_nonempty_input,
-    get_numeric_input,
-    hash_pin,
-    clear_screen
-)
+
 
 def main():
     # Initialize database and related classes
@@ -33,28 +28,21 @@ def main():
         print("Logging in as the initial manager...")
         manager_menu(user_manager, metrics_manager, kpi_calculator)
     else:
-        # Prompt for login if users already exist
-        user_id = input("Enter your User ID: ").strip()
-        pin = input("Enter your PIN: ").strip()
-        clear_screen()
-        hashed_pin = hash_pin(pin)
-        user = user_manager.get_user(user_id)
+        # Prompt for login
+        user = login_user(user_manager)
 
-        if user and user["pin"] == hashed_pin:
-            print(
-                f"Welcome, {user['name']}! You are logged in as a "
-                f"{user['role']}."
-            )
-
+        if user:
             # Determine which menu to show based on role
             if user["role"] == "manager":
                 manager_menu(user_manager, metrics_manager, kpi_calculator)
             elif user["role"] == "sales_rep":
                 sales_rep_menu(
-                    metrics_manager, kpi_calculator, user_id, user["name"]
+                    metrics_manager, kpi_calculator, user["id"], user["name"]
                 )
+            else:
+                print("Invalid User Role. Please contact your administrator.")
         else:
-            print("Invalid User ID or PIN. Please try again.")
+            print("Login failed. Please try again.")
 
     db.close()
 

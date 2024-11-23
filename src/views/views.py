@@ -1,4 +1,5 @@
 # src/views/views.py
+from src.controllers.utils import get_numeric_input_metrics, get_valid_date
 
 
 def display_manager_menu():
@@ -11,6 +12,7 @@ def display_manager_menu():
         "2. View All KPIs\n"
         "3. Generate report\n"
         "4. Exit\n"
+        "5. Seed DB with Sample Data\n"
     )
 
 
@@ -29,10 +31,11 @@ def display_sales_rep_menu():
 
 def prompt_for_metrics():
     """
-    Prompts the user to enter daily metrics data.
+    Prompts the user to enter daily metrics data and a date with validation.
 
     Returns:
-        tuple: A tuple containing the following metrics:
+        tuple: A tuple containing the following validated metrics:
+            - date (str): The date for the metrics in YYYY-MM-DD format.
             - scheduled_calls (int): Number of scheduled calls.
             - live_calls (int): Number of live calls.
             - offers (int): Number of offers made.
@@ -40,15 +43,16 @@ def prompt_for_metrics():
             - cash_collected (float): Amount of cash collected.
             - contract_value (float): Total contract value.
     """
-    scheduled_calls = int(input("Enter scheduled calls: "))
-    live_calls = int(input("Enter live calls: "))
-    offers = int(input("Enter offers made: "))
-    closed = int(input("Enter closed deals: "))
-    cash_collected = float(input("Enter cash collected: "))
-    contract_value = float(input("Enter contract value: "))
+    date = get_valid_date("Enter the date (YYYY-MM-DD): ")
+    scheduled_calls = int(get_numeric_input_metrics("Enter scheduled calls: "))
+    live_calls = int(get_numeric_input_metrics("Enter live calls: "))
+    offers = int(get_numeric_input_metrics("Enter offers made: "))
+    closed = int(get_numeric_input_metrics("Enter closed deals: "))
+    cash_collected = float(get_numeric_input_metrics("Enter cash collected: "))
+    contract_value = float(get_numeric_input_metrics("Enter contract value: "))
 
-    # Return all the collected metrics as a tuple
     return (
+        date,
         scheduled_calls,
         live_calls,
         offers,

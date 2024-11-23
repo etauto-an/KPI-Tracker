@@ -8,17 +8,21 @@ from src.controllers.utils import (
     get_nonempty_input,
     get_numeric_input,
     hash_pin,
-    clear_screen
+    clear_screen,
+    seed_database,
+    seed_database_interactive,
+    generate_report,
 )
 import os
+
 
 def login_user(user_manager):
     """
     Prompts the user for login credentials and authenticates the user.
-    
+
     Args:
         user_manager (UserManager): Instance of UserManager to handle user authentication.
-    
+
     Returns:
         dict: User details if authentication is successful, None otherwise.
     """
@@ -30,11 +34,14 @@ def login_user(user_manager):
     user = user_manager.get_user(user_id)
 
     if user and user["pin"] == hashed_pin:
-        print(f"Welcome, {user['name']}! You are logged in as a {user['role']}.")
+        print(
+            f"Welcome, {user['name']}! You are logged in as a {user['role']}."
+        )
         return user
     else:
-        print("Invalid User ID or PIN. Please try again.")
+        print("Invalid User ID or PIN.")
         return None
+
 
 def manager_menu(
     user_manager: UserManager,
@@ -50,6 +57,8 @@ def manager_menu(
         management.
         kpi_calculator (KPI): Instance of KPI for KPI calculations.
     """
+    import plotext as plt  # Import plotext for graphing
+
     while True:
         views.display_manager_menu()
         choice = input("Enter your choice: ").strip()
@@ -91,14 +100,18 @@ def manager_menu(
             kpi_calculator.compare_all_kpis()
 
         elif choice == "3":
-            # Placeholder for report generation
-            print("Generating report (functionality to be implemented).")
-            print("")
+            # Generate team performance overview
+            print("Generating report:")
+            generate_report(metrics_manager)
 
         elif choice == "4":
             # Exit the manager menu
             print("Logging out of manager menu.")
             break
+
+        elif choice == "5":
+            # Seed the database with sample data
+            seed_database_interactive(metrics_manager)
 
         else:
             print("Invalid choice. Please try again.")
@@ -124,6 +137,7 @@ def sales_rep_menu(
         if choice == "1":
             # Prompt for daily metrics and add them using SalesRepData
             (
+                date,
                 scheduled_calls,
                 live_calls,
                 offers,
@@ -133,6 +147,7 @@ def sales_rep_menu(
             ) = views.prompt_for_metrics()
             metrics_manager.add_daily_metrics(
                 rep_id,
+                date,
                 scheduled_calls,
                 live_calls,
                 offers,

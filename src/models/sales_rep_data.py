@@ -16,6 +16,7 @@ class SalesRepData:
     def add_daily_metrics(
         self,
         rep_id,
+        date,
         scheduled_calls,
         live_calls,
         offers,
@@ -27,7 +28,8 @@ class SalesRepData:
         Adds daily metrics for a specific sales rep to the database.
 
         Args:
-            rep_id (int): The ID of the sales rep.
+            rep_id (str): The ID of the sales rep.
+            date (str): The date of the metrics in MM/DD/YYYY format.
             scheduled_calls (int): The number of scheduled calls.
             live_calls (int): The number of live calls.
             offers (int): The number of offers made.
@@ -37,12 +39,14 @@ class SalesRepData:
         """
         self.db.execute_query(
             """
-            INSERT INTO sales_rep_data (rep_id, date, scheduled_calls,
-            live_calls, offers, closed, cash_collected, contract_value)
-            VALUES (?, date('now'), ?, ?, ?, ?, ?, ?)
+            INSERT INTO sales_rep_data (
+                rep_id, date, scheduled_calls, live_calls, offers,
+                closed, cash_collected, contract_value
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 rep_id,
+                date,  # Explicitly use the provided date
                 scheduled_calls,
                 live_calls,
                 offers,
