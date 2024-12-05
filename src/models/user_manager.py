@@ -18,35 +18,37 @@ class UserManager:
         """
         self.db = db
 
-    def add_user(self, user_id, pin, name, role="sales_rep"):
+    def add_user(self, user_id, name, pin, role="sales_rep"):
         """
-        Adds a new user to the database.
+        Adds a new user to the system with the given details.
 
         Args:
-            user_id (str): Unique identifier for the user.
-            pin (str): Hashed PIN for user authentication.
+            user_id (str): Unique identifier for the user (e.g., "SR001").
             name (str): Name of the user.
-            role (str): Role of the user, either 'sales_rep' or 'manager'.
+            pin (str): Hashed PIN for the user's login.
+            role (str): Role of the user, defaults to "sales_rep".
+
+        Returns:
+            tuple: A tuple containing a boolean indicating success and a message.
+                   (True, "Success message") if the user is added successfully.
+                   (False, "Error message") if the operation fails (e.g., duplicate ID).
         """
-        self.db.execute_query(
-            """
-            INSERT INTO users (id, pin, name, role)
-            VALUES (?, ?, ?, ?)
-            """,
-            (user_id, pin, name, role),
-        )
+        response = self.db.insert_user(user_id, name, pin, role)
+        if response["success"]:
+            return True, response["message"]
+        else:
+            return False, response["message"]
 
     def get_user(self, user_id):
         """
-        Retrieves user information based on user ID.
+        Retrieves user information based on the provided user ID.
 
         Args:
-            user_id (str): The user ID to retrieve.
+            user_id (str): The user ID to retrieve information for.
 
         Returns:
-            dict: User information including id, pin, name, and role if the user
-                  exists.
-                  None if the user is not found.
+            dict: A dictionary with the user's details (id, pin, name, role)
+                  if the user exists. Returns None if the user is not found.
         """
         result = self.db.fetch_all(
             """
@@ -55,42 +57,26 @@ class UserManager:
             (user_id,),
         )
         if result:
-            # Return as a dictionary to allow access by keys like "pin"
+            # Return the user data as a dictionary
             return {
-                "id": result[0][0],
-                "pin": result[0][1],
-                "name": result[0][2],
-                "role": result[0][3],
+                "id": result[0][0],  # User ID
+                "pin": result[0][1],  # Hashed PIN
+                "name": result[0][2],  # User's name
+                "role": result[0][3],  # User's role
             }
-        return None
+        return None  # User not found
 
     def get_all_users(self):
         """
-        Retrieves all users in the system, mainly for KPI calculations.
+        Retrieves all users in the system. Mainly used for administrative tasks
+        like KPI calculations or viewing user lists.
 
         Returns:
-            list: List of dictionaries with user information for all users.
+            list: A list of dictionaries containing user information (id, name, role)
+                  for all users in the database.
         """
         results = self.db.fetch_all("SELECT id, name, role FROM users")
+        # Convert the query result into a list of dictionaries
         return [
             {"id": row[0], "name": row[1], "role": row[2]} for row in results
         ]
-
-    def validate_user_id(self, user_id):
-        """
-        Checks if a user ID already exists in the database.
-
-        Args:
-            user_id (str): The user ID to validate.
-
-        Returns:
-            bool: True if the user ID does not exist, False otherwise.
-        """
-        query = "SELECT COUNT(*) FROM users WHERE id = ?"
-        try:
-            result = self.db.fetch_all(query, (user_id,))
-            # If the result is empty or returns a count of 0, the user ID is valid
-            return result and result[0][0] == 0
-        except Exception as e:
-            print(f"Error validating user ID: {e}")
-            return False

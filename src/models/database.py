@@ -20,7 +20,7 @@ class Database:
         self.conn = sqlite3.connect(db_name)
         self.cursor = self.conn.cursor()
 
-        # Create tables when the database is initialized
+        # Automatically set up tables during initialization
         self.setup_tables()
 
     def setup_tables(self):
@@ -29,36 +29,38 @@ class Database:
         - sales_rep_data: Stores daily metrics for each sales rep.
         - users: Stores user information, including roles for role-based access.
         """
+        # Create the 'sales_rep_data' table for storing daily metrics
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS sales_rep_data (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                rep_id TEXT,          -- References the user ID of the sales rep
-                date TEXT,            -- Date of the metric entry
-                scheduled_calls INTEGER,
-                live_calls INTEGER,
-                offers INTEGER,
-                closed INTEGER,
-                cash_collected REAL,
-                contract_value REAL,
-                FOREIGN KEY (rep_id) REFERENCES users (id)
+                id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing unique ID
+                rep_id TEXT,                           -- References the user ID of the sales rep
+                date TEXT,                             -- Date of the metric entry
+                scheduled_calls INTEGER,               -- Number of scheduled calls
+                live_calls INTEGER,                    -- Number of live calls made
+                offers INTEGER,                        -- Number of offers presented
+                closed INTEGER,                        -- Number of deals closed
+                cash_collected REAL,                   -- Amount of cash collected
+                contract_value REAL,                   -- Total contract value of closed deals
+                FOREIGN KEY (rep_id) REFERENCES users (id) -- Relationship with users table
             )
             """
         )
 
-        # Table for users remains unchanged
+        # Create the 'users' table to store user credentials and roles
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS users (
-                id TEXT PRIMARY KEY,          -- User ID, e.g., EMP001
-                pin TEXT,                     -- Hashed PIN for security
+                id TEXT PRIMARY KEY,          -- User ID (unique), e.g., EMP001
+                pin TEXT,                     -- Hashed PIN for security purposes
                 name TEXT,                    -- Name of the user
-                role TEXT CHECK(role IN ('sales_rep', 'manager'))
-                                              -- Role-based access restriction
+                role TEXT CHECK(role IN ('sales_rep', 'manager')), -- Restrict roles to predefined types
+                UNIQUE(id)                    -- Enforce unique User IDs
             )
             """
         )
 
+        # Commit the changes to persist table structures in the database
         self.conn.commit()
 
     def execute_query(self, query, params=()):
@@ -91,3 +93,35 @@ class Database:
         Closes the database connection.
         """
         self.conn.close()
+
+    def insert_user(self, user_id, name, pin, role):
+        """
+        Inserts a new user into the 'users' table.
+
+        Args:
+            user_id (str): Unique identifier for the user (e.g., EMP001).
+            name (str): Name of the user.
+            pin (str): Hashed PIN for authentication.
+            role (str): Role of the user (e.g., 'sales_rep', 'manager').
+
+        Returns:
+            dict: A dictionary containing the operation result:
+                  - success (bool): True if the user is added successfully, False otherwise.
+                  - message (str): Success or error message.
+        """
+        try:
+            # Attempt to insert a new user into the database
+            self.execute_query(
+                """
+                INSERT INTO users (id, name, pin, role)
+                VALUES (?, ?, ?, ?)
+                """,
+                (user_id, name, pin, role),
+            )
+            return {"success": True, "message": "User added successfully."}
+        except sqlite3.IntegrityError as e:
+            # Handle duplicate User ID or other integrity issues
+            if "UNIQUE constraint failed" in str(e):
+                return {"success": False, "message": "User ID already exists."}
+            else:
+                return {"success": False, "message": str(e)}

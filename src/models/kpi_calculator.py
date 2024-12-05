@@ -30,7 +30,7 @@ class KPI:
 
         Outputs:
             Displays KPI summary including raw values, show percentage, offer
-            percentage, close percentage, cash per call, and revenue per call in 
+            percentage, close percentage, cash per call, and revenue per call in
             the specified format.
         """
         # Fetch sales rep data from sales_rep_data table
@@ -77,20 +77,16 @@ class KPI:
             f" - Close Percentage: {close_percentage:.2f}% ({offers} Offers, {closed} "
             f"Closed Deals)"
         )
-        print(
-            f" - Cash Collected: ${cash_collected:.2f}"
-        )
-        print(
-            f" - Contract Value: ${contract_value:.2f}"
-        )
+        print(f" - Cash Collected: ${cash_collected:.2f}")
+        print(f" - Contract Value: ${contract_value:.2f}")
 
     def compare_all_kpis(self):
         """
-        Compares KPIs across all sales reps by retrieving data through 
+        Compares KPIs across all sales reps by retrieving data through
         UserManager.
 
         Outputs:
-            Displays a KPI summary (with raw values) for each sales rep for 
+            Displays a KPI summary (with raw values) for each sales rep for
             comparison.
         """
         # Get all sales reps from UserManager

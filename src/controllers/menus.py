@@ -67,15 +67,9 @@ def manager_menu(
         if choice == "1":
             # Add a new sales rep using UserManager
             name = get_nonempty_input("Enter the sales rep's name: ")
-            while True:
-                user_id = get_nonempty_input(
-                    "Enter the sales rep's user ID (e.g., SR001): "
-                )
-                if user_manager.validate_user_id(user_id):
-                    break  # Exit the loop if the User ID is unique
-                print(
-                    f"Error: User ID '{user_id}' already exists. Please try a different ID."
-                )
+            user_id = get_nonempty_input(
+                "Enter the sales rep's user ID (e.g., SR001): "
+            )
 
             # Use get_numeric_input to enforce nonempty and numeric validation for PIN
             pin = get_numeric_input(
@@ -85,14 +79,15 @@ def manager_menu(
             hashed_pin = hash_pin(pin)
             clear_screen()
 
-            # Use UserManager to add the new sales rep
-            try:
-                user_manager.add_user(
-                    user_id=user_id, pin=hashed_pin, name=name, role="sales_rep"
-                )
+            # Use UserManager's insert_user method to add the new sales rep
+            result = user_manager.db.insert_user(
+                user_id=user_id, name=name, pin=hashed_pin, role="sales_rep"
+            )
+
+            if result["success"]:
                 print(f"Sales rep {name} added successfully with ID {user_id}.")
-            except ValueError as e:
-                print(f"Error: {e}")
+            else:
+                print(f"Error: {result['message']}")
 
         elif choice == "2":
             # View KPIs across all sales reps using KPI
