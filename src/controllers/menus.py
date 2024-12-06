@@ -57,7 +57,6 @@ def manager_menu(
         management.
         kpi_calculator (KPI): Instance of KPI for KPI calculations.
     """
-    import plotext as plt  # Import plotext for graphing
 
     while True:
         views.display_manager_menu()
@@ -70,24 +69,24 @@ def manager_menu(
             user_id = get_nonempty_input(
                 "Enter the sales rep's user ID (e.g., SR001): "
             )
-
+        
             # Use get_numeric_input to enforce nonempty and numeric validation for PIN
             pin = get_numeric_input(
                 "Enter a 4-digit PIN for the sales rep: ", length=4
             )
-
+        
             hashed_pin = hash_pin(pin)
             clear_screen()
-
-            # Use UserManager's insert_user method to add the new sales rep
-            result = user_manager.db.insert_user(
+        
+            # Use UserManager's add_user method to add the new sales rep
+            success, message = user_manager.add_user(
                 user_id=user_id, name=name, pin=hashed_pin, role="sales_rep"
             )
-
-            if result["success"]:
+        
+            if success:
                 print(f"Sales rep {name} added successfully with ID {user_id}.")
             else:
-                print(f"Error: {result['message']}")
+                print(f"Error: {message}")
 
         elif choice == "2":
             # View KPIs across all sales reps using KPI
